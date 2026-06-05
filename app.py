@@ -14,6 +14,10 @@ def register_static_mime_types() -> None:
 
     mimetypes.add_type("text/javascript", ".js")
     mimetypes.add_type("application/javascript", ".mjs")
+    # Web app manifest must be served as application/manifest+json; the stdlib
+    # maps .json -> application/json otherwise, which some browsers warn on
+    # and can refuse for installability.
+    mimetypes.add_type("application/manifest+json", ".webmanifest")
 
 
 register_static_mime_types()
@@ -379,6 +383,15 @@ class _RevalidatingStatic(StaticFiles):
         resp = await super().get_response(path, scope)
         if path.endswith((".js", ".css", ".html")):
             resp.headers["Cache-Control"] = "no-cache"
+        # Let the service worker control the whole origin, not just /static/, so
+        # it can serve the "/" app shell offline. (Not required for install, but
+        # useful; the registration requests scope "/".)
+        if path == "sw.js":
+            resp.headers["Service-Worker-Allowed"] = "/"
+        # Correct the manifest content-type (stdlib serves .json as
+        # application/json, which browsers warn on for installability).
+        if path == "manifest.json":
+            resp.headers["Content-Type"] = "application/manifest+json"
         return resp
 
 

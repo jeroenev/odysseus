@@ -72,6 +72,10 @@ output.txt.txt
 !docs/**/*.jpg
 !docs/**/*.gif
 !docs/**/*.webp
+# …and the shipped PWA icons referenced by static/manifest.json. Without these
+# the manifest points at 404s and the app is not installable on mobile.
+!static/icon-192.png
+!static/icon-512.png
 
 # Reports and temp files
 reports/

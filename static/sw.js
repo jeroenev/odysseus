@@ -7,7 +7,7 @@
 //   - Other static assets (images/fonts/libs): cache-first with bg refresh.
 //   - API / non-GET: never cached.
 // Bump CACHE_NAME whenever the precache list or SW logic changes.
-const CACHE_NAME = 'odysseus-v327';
+const CACHE_NAME = 'odysseus-v332';
 
 // Core shell precached on install so repeat opens are instant without any
 // network wait. Keep this list in sync with the <script type="module"> tags
@@ -46,6 +46,7 @@ const PRECACHE = [
   '/static/js/settings.js',
   '/static/js/admin.js',
   '/static/js/init.js',
+  '/static/js/pwaInstall.js',
   '/static/js/slashCommands.js',
   '/static/js/emailInbox.js',
   '/static/js/emailLibrary/utils.js',
@@ -71,7 +72,9 @@ self.addEventListener('install', (e) => {
       Promise.all(
         PRECACHE.map(url =>
           fetch(url, { cache: 'reload' })
-            .then(res => res.ok ? cache.put(url, res) : null)
+            // Skip redirects: logged out, "/" 302s to /login and would get
+            // cached under "/", later shown to a logged-in user.
+            .then(res => (res.ok && !res.redirected) ? cache.put(url, res) : null)
             .catch(() => null)
         )
       )
@@ -103,7 +106,10 @@ self.addEventListener('fetch', (e) => {
       caches.open(CACHE_NAME).then(async cache => {
         const cached = await cache.match('/');
         const network = fetch(e.request).then(res => {
-          if (res && res.ok) cache.put('/', res.clone());
+          // Only cache a real, same-URL 200. When logged out, "/" 302-redirects
+          // to /login and fetch follows it (res.redirected); caching that under
+          // "/" would later serve the login page to a logged-in user. Skip it.
+          if (res && res.ok && !res.redirected) cache.put('/', res.clone());
           return res;
         }).catch(() => cached);
         return cached || network;

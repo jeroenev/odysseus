@@ -95,6 +95,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
                 "img-src 'self' data: blob:; "
                 "media-src 'self' blob:; "
                 "connect-src 'self'; "
+                "manifest-src 'self' blob:; "
                 "frame-src 'self'; "
                 "frame-ancestors 'none'"
             )

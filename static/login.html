@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-visual">
 <title>Odysseus — Login</title>
+<!-- PWA: the logged-out landing page is what a fresh mobile visitor sees, so
+     it carries the manifest + meta + install affordance too, not just the
+     authenticated app shell. -->
+<link rel="manifest" href="/static/manifest.json">
+<meta name="theme-color" content="#282c34">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Odysseus">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="/static/icon-192.png">
 <script nonce="{{CSP_NONCE}}">
 (function(){
   // Per-theme bg-effect defaults — mirrors THEME_DEFAULT_* maps in
@@ -578,5 +588,7 @@ try {
   console.error('[login-bg] failed:', e);
 }
 </script>
+<script type="module" src="/static/js/pwaInstall.js"></script>
+<script nonce="{{CSP_NONCE}}">if('serviceWorker' in navigator){navigator.serviceWorker.register('/static/sw.js',{scope:'/'}).catch(()=>{});}</script>
 </body>
 </html>
