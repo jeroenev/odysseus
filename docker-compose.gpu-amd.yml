@@ -185,18 +185,6 @@ services:
       start_period: 10s
     restart: unless-stopped
 
-  ntfy:
-    image: docker.io/binwiederhier/ntfy
-    command: serve
-    ports:
-      - "${NTFY_BIND:-127.0.0.1}:8091:80"
-    volumes:
-      - ntfy-cache:/var/cache/ntfy
-    environment:
-      - NTFY_BASE_URL=${NTFY_BASE_URL:-http://localhost:8091}
-    restart: unless-stopped
-
 volumes:
   searxng-data:
   chromadb-data:
-  ntfy-cache:

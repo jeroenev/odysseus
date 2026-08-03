@@ -794,7 +794,7 @@ def setup_auth_routes(auth_manager: AuthManager) -> APIRouter:
             except Exception as e:
                 hint = ""
                 if parsed.hostname not in ("127.0.0.1", "localhost"):
-                    hint = " If this is Docker Compose ntfy, set NTFY_BIND to that host/Tailscale IP and NTFY_BASE_URL to the same server URL in .env, then recreate ntfy."
+                    hint = " Make sure the ntfy base URL in the integration is reachable from this host (e.g. https://ntfy.sh or your own ntfy server)."
                 return {"ok": False, "message": f"ntfy publish to {full_url} failed: {e}.{hint}"[:500]}
 
         if preset == "discord_webhook":
