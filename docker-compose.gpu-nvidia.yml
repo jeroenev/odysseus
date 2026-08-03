@@ -15,22 +15,25 @@ services:
     ports:
       - "${APP_BIND:-127.0.0.1}:${APP_PORT:-7000}:7000"
     volumes:
-      # ${ODYSSEUS_DATA} lets deployments that can't resolve relative bind
-      # paths (e.g. Portainer Git stacks on Synology, which resolve "./" against
-      # the in-container /data/compose/<id> path the host daemon can't see) point
-      # at an absolute host path. Defaults to "." so local dev is unchanged.
-      - ${ODYSSEUS_DATA:-.}/data:/app/data:z
-      - ${ODYSSEUS_DATA:-.}/logs:/app/logs:z
+      # ${ODYSSEUS_DATA} prefixes the data/logs bind paths for deployments
+      # that can't resolve relative bind paths (e.g. Portainer Git stacks on
+      # Synology, which resolve "./" against the in-container
+      # /data/compose/<id> path the host daemon can't see). Defaults to "." so
+      # local dev is unchanged. The older full-path variables
+      # APP_DATA_DIR/APP_LOGS_DIR take precedence when set, so pre-existing
+      # configs keep working unchanged.
+      - ${APP_DATA_DIR:-${ODYSSEUS_DATA:-.}/data}:/app/data:z
+      - ${APP_LOGS_DIR:-${ODYSSEUS_DATA:-.}/logs}:/app/logs:z
       # Cookbook remote-server SSH identity. Odysseus can generate a key here;
       # add the shown public key to each remote server's authorized_keys.
-      - ${ODYSSEUS_DATA:-.}/data/ssh:/app/.ssh:z
+      - ${APP_DATA_DIR:-${ODYSSEUS_DATA:-.}/data}/ssh:/app/.ssh:z
       # Cookbook local model cache. Inside Docker, "Local" means the Odysseus
       # container, so persist its HuggingFace cache under ./data/huggingface.
-      - ${ODYSSEUS_DATA:-.}/data/huggingface:/app/.cache/huggingface:z
+      - ${APP_DATA_DIR:-${ODYSSEUS_DATA:-.}/data}/huggingface:/app/.cache/huggingface:z
       # Cookbook-installed Python CLIs/packages (vLLM, llama-cpp-python, etc.)
       # land under /app/.local for the odysseus user. Persist them so a
       # container recreate does not silently remove installed serve engines.
-      - ${ODYSSEUS_DATA:-.}/data/local:/app/.local:z
+      - ${APP_DATA_DIR:-${ODYSSEUS_DATA:-.}/data}/local:/app/.local:z
       # Docker socket — lets Cookbook launch commands like
       # `docker exec ollama-rocm ollama show <tag>` reach the host's
       # Docker daemon (and sibling containers like ollama-rocm /

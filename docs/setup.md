@@ -497,6 +497,7 @@ Key settings:
 | `APP_BIND` | `127.0.0.1` | Docker Compose host bind address for the web UI. Use `0.0.0.0` only for intentional LAN/reverse-proxy access. |
 | `APP_PORT` | `7000` | Docker Compose host port for the web UI. |
 | `ODYSSEUS_DATA` | `.` | Prefix for the Docker Compose data/logs bind mounts (`${ODYSSEUS_DATA}/data`, `${ODYSSEUS_DATA}/logs`). Set to an absolute host path for deployments that can't resolve relative bind paths (e.g. Portainer Git stacks on Synology). |
+| `APP_DATA_DIR` / `APP_LOGS_DIR` | unset | Legacy full-path overrides for the data/logs bind mounts. If set, they take precedence over `ODYSSEUS_DATA`, so existing configs keep working unchanged. |
 | `AUTH_ENABLED` | `true` | Enable/disable login |
 | `LOCALHOST_BYPASS` | `false` | Development-only auth bypass for loopback requests. Keep false for shared/network deployments. |
 | `ALLOWED_ORIGINS` | `http://localhost,http://127.0.0.1` | Comma-separated exact permitted origins for cross-origin browser/API clients. |
